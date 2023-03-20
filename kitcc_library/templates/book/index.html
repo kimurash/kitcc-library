@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Books{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% if g.user %}
+    <a class="action" href="{{ url_for('book.create_book') }}">New</a>
+  {% endif %}
+  {% if not books %}
+    <p>No books registered</p>
+  {% else %}
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Publisher</th>
+          <th>Stock</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book['title'] }}</td>
+            <td>{{ book['author'] }}</td>
+            <td>{{ book['publisher'] }}</td>
+            <td>{{ book['stock'] }}</td>
+            <td>
+              <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">編集</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

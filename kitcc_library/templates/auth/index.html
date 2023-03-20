@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Users{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% if g.user %}
+    <a class="action" href="{{ url_for('auth.register_user') }}">New</a>
+  {% endif %}
+  {% if not users %}
+    <p>No users registered</p>
+  {% else %}
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user['username'] }}</td>
+            <td>
+              <form action="{{ url_for('auth.delete_user', id=user['id']) }}" method="post">
+                <input
+                  class="danger" type="submit" value="Delete"
+                  onclick="return confirm('Are you sure?');">
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}
