@@ -46,7 +46,7 @@ def create_book():
         error = check_form_data(attr)
 
         if error:
-            flash(error, category='error')
+            flash(error, category='flash error')
         else:
             # 書籍の登録
             db = get_db()
@@ -56,7 +56,7 @@ def create_book():
                 (attr['title'], attr['author'], attr['publisher'])
             )
             db.commit()
-            flash('Registered', category='message')
+            flash('Registered', category='flash message')
             return redirect(url_for('book.index'))
 
     return render_template('book/create.html')
@@ -76,7 +76,7 @@ def update_book(isbn):
         error = check_form_data(attr)
 
         if error:
-            flash(error, category='error')
+            flash(error, category='flash error')
         else:
             # 書籍の変更を保存
             db = get_db()
@@ -86,7 +86,7 @@ def update_book(isbn):
                 (attr['title'], attr['author'], attr['publisher'], isbn)
             )
             db.commit()
-            flash('Updated', category='message')
+            flash('Updated', category='flash message')
             return redirect(url_for('book.index'))
 
     return render_template('book/update.html', book=book)
@@ -101,7 +101,7 @@ def delete_book(isbn):
     db.execute('DELETE FROM book WHERE isbn = ?', (isbn,))
     db.commit()
 
-    flash('Deleted', category='message')
+    flash('Deleted', category='flash message')
     return redirect(url_for('book.index'))
 
 def get_data_from_form():

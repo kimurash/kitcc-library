@@ -11,7 +11,14 @@
   {% if not books %}
     <p>No books registered</p>
   {% else %}
-    <table>
+    <table class="book-list">
+      <colgroup>
+        <col width="25%">
+        <col width="25%">
+        <col width="25%">
+        <col width="10%">
+        <col width="10%">
+      </colgroup>
       <thead>
         <tr>
           <th>Title</th>
@@ -24,11 +31,11 @@
       <tbody>
         {% for book in books %}
         <tr>
-            <td>{{ book['title'] }}</td>
-            <td>{{ book['author'] }}</td>
-            <td>{{ book['publisher'] }}</td>
-            <td>{{ book['stock'] }}</td>
-            <td>
+            <td class="book-title">{{ book['title'] }}</td>
+            <td class="book-author">{{ book['author'] }}</td>
+            <td class="book-publisher">{{ book['publisher'] }}</td>
+            <td class="book-stock">{{ book['stock'] }}</td>
+            <td class="book-edit">
               <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">編集</a>
             </td>
           </tr>

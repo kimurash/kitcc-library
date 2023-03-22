@@ -21,7 +21,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            flash('Please log in before', category='warning')
+            flash('Please log in before', category='flash warning')
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)
@@ -83,10 +83,10 @@ def register_user():
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
-                flash('Registered', category='message')
+                flash('Registered', category='flash message')
                 return redirect(url_for("auth.login"))
 
-        flash(error, category='error') # エラーメッセージを表示
+        flash(error, category='flash error') # エラーメッセージを表示
 
     return render_template('auth/register.html')
 
@@ -99,7 +99,7 @@ def delete_user(id):
     db.execute('DELETE FROM user WHERE id = ?', (id,))
     db.commit()
 
-    flash('Deleted', category='message')
+    flash('Deleted', category='flash message')
     return redirect(url_for('auth.index'))
 
 @blueprint.route('/login', methods=('GET', 'POST'))
@@ -130,15 +130,15 @@ def login():
             session.clear()
             session['user_id'] = user['id']
 
-            flash(f'Logged in as {username}', category='info')
+            flash(f'Logged in as {username}', category='flash info')
             return redirect(url_for('index'))
 
-        flash(error, category='error')
+        flash(error, category='flash error')
 
     return render_template('auth/login.html')
 
 @blueprint.route('/logout')
 def logout():
     session.clear()
-    flash('Logged out', category='message')
+    flash('Logged out', category='flash message')
     return redirect(url_for('index'))
