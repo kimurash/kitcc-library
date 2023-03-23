@@ -1,0 +1,176 @@
+html {
+  background: #eee;
+  padding: 1rem;
+}
+
+body {
+  max-width: 960px;
+  margin: 0 auto; /* 中央寄せ */
+  background: white;
+}
+
+h1 {
+  color: #377ba8;
+  margin: 1rem 0;
+}
+
+a {
+  color: #377ba8;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid lightgray;
+}
+
+/* ナビゲーションバー */
+nav {
+  background: lightgray;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+nav h1 {
+  flex: auto;
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a, nav ul li span {
+  display: block;
+  padding: 0.5rem;
+}
+
+.content {
+  padding: 0 1rem 1rem;
+}
+
+.content > header {
+  border-bottom: 1px solid lightgray;
+  display: flex;
+  align-items: flex-end;
+}
+
+.content > header h1 {
+  flex: auto;
+  margin: 1rem 0 0.25rem 0;
+}
+
+.flash{
+  font-weight: bold;
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 10px;
+}
+
+/* メッセージの文字色と背景色の指定 */
+/* Bootstrapを参考にして書いた */
+.flash.message {
+  color: #377ba8;
+  background: #cae6f6;
+}
+
+.flash.info{
+  color: #087990;
+  background-color: #cff4fc;
+}
+
+.flash.warning{
+  color: #997404;
+  background: #fff3cd;;
+}
+
+.flash.error{
+  color: #b02a37;;
+  background-color: #f8d7da;
+}
+
+/* 書籍一覧表 */
+table{
+  table-layout: fixed;
+  /* max-width: ; */
+  padding: 0;
+  border-width: 2px 0;
+  border-style: solid;
+  border-color: dimgray;
+  border-spacing: 0;
+  margin: 10px auto;
+}
+
+.book-list{
+  width: 100%;
+}
+
+.user-list{
+  width: 50%;
+  margin: 10px 0;
+}
+
+th, td{
+  text-align: center;
+  padding: 5px 15px;
+  border-width: 1px 0;
+  border-style: solid;
+  border-color: gray;
+  margin: 10pt auto;
+}
+
+th{
+  /* text-align: center; */
+  font-weight: bold;
+  background-color: #a0b8c8;
+  margin: 0;
+}
+
+td{
+  background-color: whitesmoke;
+}
+
+.book-title, .book-author, .book-publisher{
+  text-align: left;
+  white-space: nowrap; /* 改行しない */
+  overflow-x: auto; /* 収まらない場合はスクロール */
+}
+
+.content:last-child {
+  margin-bottom: 0;
+}
+
+.content form {
+  margin: 0.5em 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content label {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.content input {
+  padding: 3px;
+  margin-bottom: 1em;
+}
+
+/* ユーザの一覧表の削除ボタン */
+.user-list input[type=submit]{
+  align-self: center;
+  margin: 0;
+}
+
+input.danger {
+  color: #cc2f2e;
+}
+
+input[type=submit] {
+  align-self: start;
+  min-width: 10em;
+  max-width: 10em;
+}
