@@ -48,12 +48,13 @@ def get_book(isbn):
 @login_required
 def create_book():
     """
-    GET :書籍の登録画面に遷移
+    GET :書籍の検索画面に遷移
     POST:書籍を検索して表示
     """
     if request.method == 'POST':
         attr = get_data_from_form()
-        error = check_form_data(attr)
+        # error = check_form_data(attr)
+        error = None #errorは考えなくていい?
 
         if error:
             flash(error, category='flash error')
@@ -76,6 +77,7 @@ def update_book(isbn):
 
     if request.method == 'POST':
         attr = get_data_from_form()
+        attr['stock'] = request.form['stock']
         error = check_form_data(attr)
 
         if error:
@@ -84,9 +86,9 @@ def update_book(isbn):
             # 書籍の変更を保存
             db = get_db()
             db.execute(
-                'UPDATE book SET title = ?, author = ?, publisher = ?'
+                'UPDATE book SET title = ?, author = ?, publisher = ?, stock = ? '
                 ' WHERE isbn = ?',
-                (attr['title'], attr['author'], attr['publisher'], isbn)
+                (attr['title'], attr['author'], attr['publisher'], attr['stock'], isbn)
             )
             db.commit()
             flash('Updated', category='flash message')
@@ -118,12 +120,10 @@ def get_data_from_form():
 
 def check_form_data(attr: dict):
     """リクエストに必要なデータが含まれているか確認する"""
-    flag = 0
-    for value in attr.values():
-        if value:
-            flag += 1
-    if (flag == 0):
-        return f'One or more conditons are required.'
+    for (key, value) in attr.items():
+        if not value:
+            return f'{key.capitalize()} is required.'
+
     return ''
 
 def search_books_from_API(attr: dict):
@@ -207,12 +207,12 @@ def register_book(isbn):
     db = get_db()
     same_book = db.execute(
         'SELECT * FROM book WHERE isbn = ?', (isbn,)
-    ).fetchone()
+    ).fetchone() #get_book()で良さそう
     if same_book is None:
         db.execute(
-            'INSERT INTO book (title, author, publisher)'
-            ' VALUES (?, ?, ?)',
-            (attr['title'], attr['author'], attr['publisher'])
+            'INSERT INTO book (title, author, publisher, ISBN)'
+            ' VALUES (?, ?, ?, ?)',
+            (attr['title'], attr['author'], attr['publisher'], isbn)
         )
     else:
         db.execute(
