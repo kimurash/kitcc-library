@@ -24,26 +24,26 @@ hr {
 }
 
 /* ナビゲーションバー */
-nav {
+.nav-top {
   background: lightgray;
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
 }
 
-nav h1 {
+.nav-top h1 {
   flex: auto;
   margin: 0;
 }
 
-nav ul {
+.nav-top ul {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-nav ul li a, nav ul li span {
+.nav-top ul li a, .nav-top ul li span {
   display: block;
   padding: 0.5rem;
 }
@@ -173,4 +173,22 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
   max-width: 10em;
+}
+
+/* flask-paginate */
+.pagination-page-info {
+  padding: .6em;
+  padding-left: 0;
+  width: 40em;
+  margin: .5em;
+  margin-left: 0;
+  font-size: 12px;
+}
+
+.pagination-page-info b {
+  color: black;
+  background: #6aa6ed;
+  padding-left: 2px;
+  padding: .1em .25em;
+  font-size: 150%;
 }
