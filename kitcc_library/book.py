@@ -190,7 +190,7 @@ def create_sql_centence(attr: dict):
         if value:
             if flag != 0:
                 sql = sql + 'AND '
-            if key == 'ISBN': #isbnを文字列型にしたとき''で囲むのに気を付けた方が良い(現状、数字以外が来るとエラー).
+            if key == 'ISBN': #isbnを文字列型にしたとき''で囲むのに気を付けた方が良い?(現状、数字以外が来るとエラー).
                 sql = sql + key + ' = ' + value + ' '
             else:
                 sql = sql + key + ' LIKE \'%%' + value + '%%\' '
