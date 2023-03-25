@@ -140,7 +140,7 @@ def search_books_from_API(attr: dict):
             else:
                 url = url + '+in' + key + ':' + value
     response = requests.get(url).json()
-    num_items = int(response.get('totalItems'))
+    num_items = int(response.get('totalItems') if response.get('totalItems') is not None else '0')
     books = []
     for index in range((num_items // max_results) + int(bool(num_items % max_results))):
         temp_url = url + '&startIndex=' + str(index * max_results)
