@@ -50,8 +50,9 @@ def create_book():
     GET :書籍の検索画面に遷移&検索結果表示
     POST:書籍を登録し、一覧ページへリダイレクト
     """
-    attr = get_data_from_form()
     if request.method == 'POST':
+        attr = get_data_from_form()
+        print(attr)
         db = get_db()
         same_book = db.execute(
             'SELECT * FROM book WHERE isbn = ?', (attr['ISBN'],)
@@ -73,6 +74,8 @@ def create_book():
         return redirect(url_for('book.index'))
 
     # 書籍の検索・表示
+    attr = get_data_from_args()
+    print(attr)
     books = search_books_from_API(attr)
     return render_template('book/create.html', books=books)
 
@@ -123,10 +126,19 @@ def delete_book(isbn):
 def get_data_from_form():
     """# リクエストから必要なデータを取得する"""
     attr = dict()
-    attr['title'] = request.form['title']
-    attr['author'] = request.form['author']
-    attr['publisher'] = request.form['publisher']
-    attr['ISBN'] = request.form['ISBN']
+    attr['title'] = request.form.get('title')
+    attr['author'] = request.form.get('author')
+    attr['publisher'] = request.form.get('publisher')
+    attr['ISBN'] = request.form.get('ISBN')
+    return attr
+
+def get_data_from_args():
+    """# リクエストから必要なデータを取得する"""
+    attr = dict()
+    attr['title'] = request.args.get('title')
+    attr['author'] = request.args.get('author')
+    attr['publisher'] = request.args.get('publisher')
+    attr['ISBN'] = request.args.get('ISBN')
     return attr
 
 def check_form_data(attr: dict):
@@ -155,7 +167,7 @@ def search_books_from_API(attr: dict):
     books = []
     for index in range((num_items // max_results) + int(bool(num_items % max_results))):
         temp_url = url + '&startIndex=' + str(index * max_results)
-        # print(temp_url)
+        print(temp_url)
         temp_response = requests.get(temp_url).json()
         items_list = temp_response.get('items')
         if items_list is None:
@@ -178,21 +190,6 @@ def search_books_from_API(attr: dict):
                 'ISBN': isbn})
     return books
 
-def search_book_from_API(isbn):
-    """
-    Google Books APIsからisbnに合う本を1冊だけ検索し、JSON形式で取得。辞書型に整形
-    """
-    url = 'https://www.googleapis.com/books/v1/volumes?maxResults=1&q=isbn:' + str(isbn)
-    response = requests.get(url).json()
-    info = response.get('items')[0].get('volumeInfo')
-    authors_list = info.get('authors')
-    book = {
-        'title': info.get('title'),
-        'author': ','.join(authors_list) if authors_list is not None else None,
-        'publisher': info.get('publisher'),
-        'ISBN': isbn}
-    return book
-
 def create_sql_centence(attr: dict):
     """入力条件に応じたSQL文を生成。入力条件がないなら、登録済みの書籍を全て検索"""
     sql = 'SELECT * FROM book WHERE '
@@ -209,28 +206,3 @@ def create_sql_centence(attr: dict):
     if (flag == 0):
         return f'SELECT * FROM book ORDER BY author DESC'
     return sql
-
-# @blueprint.route('/<int:isbn>/register_book')
-# @login_required
-# def register_book(isbn):
-#     # 書籍の登録(ToDo:isbn情報登録の追加)
-#     attr = search_book_from_API(isbn)
-#     db = get_db()
-#     same_book = db.execute(
-#         'SELECT * FROM book WHERE isbn = ?', (isbn,)
-#     ).fetchone() #get_book()で良さそう
-#     if same_book is None:
-#         db.execute(
-#             'INSERT INTO book (title, author, publisher, ISBN)'
-#             ' VALUES (?, ?, ?, ?)',
-#             (attr['title'], attr['author'], attr['publisher'], isbn)
-#         )
-#     else:
-#         db.execute(
-#             'UPDATE book SET stock = ?'
-#             ' WHERE isbn = ?',
-#             (same_book['stock']+1, isbn)
-#         )
-#     db.commit()
-#     flash('Registered', category='flash message')
-#     return redirect(url_for('book.index'))
