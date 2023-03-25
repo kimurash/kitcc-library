@@ -24,26 +24,26 @@ hr {
 }
 
 /* ナビゲーションバー */
-.nav-top {
+nav {
   background: lightgray;
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
 }
 
-.nav-top h1 {
+nav h1 {
   flex: auto;
   margin: 0;
 }
 
-.nav-top ul {
+nav ul {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.nav-top ul li a, .nav-top ul li span {
+nav ul li a, nav ul li span {
   display: block;
   padding: 0.5rem;
 }
