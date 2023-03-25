@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+  <form method="get">
     <label for="title">Title</label>
     <input
       name="title" id="title" value="{{ request.form['title'] }}">
@@ -42,15 +42,25 @@
       </thead>
       <tbody>
         {% for book in books %}
-        <tr>
+        <form method="post">
+          <input type="hidden"
+            name="title" id="title" value="{{ book['title'] }}">
+          <input type="hidden"
+            name="author" id="author" value="{{ book['author'] }}">
+          <input type="hidden"
+            name="publisher" id="publisher" value="{{ book['publisher'] }}">
+          <input type="hidden"
+            name="ISBN" id="ISBN" value="{{ book['ISBN'] }}">
+          <tr>
             <td class="book-title">{{ book['title'] }}</td>
             <td class="book-author">{{ book['author'] }}</td>
             <td class="book-publisher">{{ book['publisher'] }}</td>
             <td class="book-isbn">{{ book['ISBN'] }}</td>
             <td class="book-register">
-              <a href="{{ url_for('book.register_book', isbn=book['ISBN']) }}">登録</a>
+              <input type="submit" value="Resister">
             </td>
           </tr>
+        </form>
         {% endfor %}
       </tbody>
     </table>

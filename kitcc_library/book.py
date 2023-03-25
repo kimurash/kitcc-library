@@ -47,16 +47,34 @@ def get_book(isbn):
 @login_required
 def create_book():
     """
-    GET :書籍の検索画面に遷移
-    POST:書籍を検索して表示
+    GET :書籍の検索画面に遷移&検索結果表示
+    POST:書籍を登録し、一覧ページへリダイレクト
     """
+    attr = get_data_from_form()
     if request.method == 'POST':
-        attr = get_data_from_form()
-        # 書籍の検索・表示
-        books = search_books_from_API(attr)
-        return render_template('book/create.html', books=books)
+        db = get_db()
+        same_book = db.execute(
+            'SELECT * FROM book WHERE isbn = ?', (attr['ISBN'],)
+        ).fetchone() #get_book()で良さそう
+        if same_book is None:
+            db.execute(
+                'INSERT INTO book (title, author, publisher, ISBN)'
+                ' VALUES (?, ?, ?, ?)',
+                (attr['title'], attr['author'], attr['publisher'], attr['ISBN'])
+            )
+        else:
+            db.execute(
+                'UPDATE book SET stock = ?'
+                ' WHERE isbn = ?',
+                (same_book['stock']+1, attr['ISBN'])
+            )
+        db.commit()
+        flash('Registered', category='flash message')
+        return redirect(url_for('book.index'))
 
-    return render_template('book/create.html')
+    # 書籍の検索・表示
+    books = search_books_from_API(attr)
+    return render_template('book/create.html', books=books)
 
 
 @blueprint.route('/<int:isbn>/update_book', methods=('GET', 'POST'))
@@ -192,27 +210,27 @@ def create_sql_centence(attr: dict):
         return f'SELECT * FROM book ORDER BY author DESC'
     return sql
 
-@blueprint.route('/<int:isbn>/register_book')
-@login_required
-def register_book(isbn):
-    # 書籍の登録
-    attr = search_book_from_API(isbn)
-    db = get_db()
-    same_book = db.execute(
-        'SELECT * FROM book WHERE isbn = ?', (isbn,)
-    ).fetchone()
-    if same_book is None:
-        db.execute(
-            'INSERT INTO book (title, author, publisher, ISBN)'
-            ' VALUES (?, ?, ?, ?)',
-            (attr['title'], attr['author'], attr['publisher'], isbn)
-        )
-    else:
-        db.execute(
-            'UPDATE book SET stock = ?'
-            ' WHERE isbn = ?',
-            (same_book['stock']+1, isbn)
-        )
-    db.commit()
-    flash('Registered', category='flash message')
-    return redirect(url_for('book.index'))
+# @blueprint.route('/<int:isbn>/register_book')
+# @login_required
+# def register_book(isbn):
+#     # 書籍の登録(ToDo:isbn情報登録の追加)
+#     attr = search_book_from_API(isbn)
+#     db = get_db()
+#     same_book = db.execute(
+#         'SELECT * FROM book WHERE isbn = ?', (isbn,)
+#     ).fetchone() #get_book()で良さそう
+#     if same_book is None:
+#         db.execute(
+#             'INSERT INTO book (title, author, publisher, ISBN)'
+#             ' VALUES (?, ?, ?, ?)',
+#             (attr['title'], attr['author'], attr['publisher'], isbn)
+#         )
+#     else:
+#         db.execute(
+#             'UPDATE book SET stock = ?'
+#             ' WHERE isbn = ?',
+#             (same_book['stock']+1, isbn)
+#         )
+#     db.commit()
+#     flash('Registered', category='flash message')
+#     return redirect(url_for('book.index'))
