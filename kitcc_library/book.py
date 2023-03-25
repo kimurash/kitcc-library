@@ -35,7 +35,7 @@ def index():
 
 def get_book(isbn):
     book = get_db().execute(
-        'SELECT * FROM book WHERE isbn = \'?\'', (isbn,)
+        'SELECT * FROM book WHERE isbn = ?', (isbn,)
     ).fetchone()
 
     if book is None:
@@ -96,7 +96,7 @@ def delete_book(isbn):
     """書籍を削除して一覧ページへリダイレクト"""
     get_book(isbn)
     db = get_db()
-    db.execute('DELETE FROM book WHERE isbn = \'?\'', (isbn,))
+    db.execute('DELETE FROM book WHERE isbn = ?', (isbn,))
     db.commit()
 
     flash('Deleted', category='flash message')
@@ -199,7 +199,7 @@ def register_book(isbn):
     attr = search_book_from_API(isbn)
     db = get_db()
     same_book = db.execute(
-        'SELECT * FROM book WHERE isbn = \'?\'', (isbn,)
+        'SELECT * FROM book WHERE isbn = ?', (isbn,)
     ).fetchone()
     if same_book is None:
         db.execute(
