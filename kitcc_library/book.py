@@ -23,7 +23,6 @@ def index():
     GET :登録済みの全書籍の取得
     POST:条件に合った書籍を取得し、一覧ページに表示
     """
-    # TODO: 検索機能
     db = get_db()
     if request.method == 'GET':
         books = db.execute(
@@ -36,7 +35,7 @@ def index():
 
 def get_book(isbn):
     book = get_db().execute(
-        'SELECT * FROM book WHERE isbn = ?', (isbn,)
+        'SELECT * FROM book WHERE isbn = \'?\'', (isbn,)
     ).fetchone()
 
     if book is None:
@@ -53,15 +52,9 @@ def create_book():
     """
     if request.method == 'POST':
         attr = get_data_from_form()
-        # error = check_form_data(attr)
-        error = None #errorは考えなくていい?
-
-        if error:
-            flash(error, category='flash error')
-        else:
-            # 書籍の検索・表示
-            books = search_books_from_API(attr)
-            return render_template('book/create.html', books=books)
+        # 書籍の検索・表示
+        books = search_books_from_API(attr)
+        return render_template('book/create.html', books=books)
 
     return render_template('book/create.html')
 
@@ -103,7 +96,7 @@ def delete_book(isbn):
     """書籍を削除して一覧ページへリダイレクト"""
     get_book(isbn)
     db = get_db()
-    db.execute('DELETE FROM book WHERE isbn = ?', (isbn,))
+    db.execute('DELETE FROM book WHERE isbn = \'?\'', (isbn,))
     db.commit()
 
     flash('Deleted', category='flash message')
@@ -190,8 +183,8 @@ def create_sql_centence(attr: dict):
         if value:
             if flag != 0:
                 sql = sql + 'AND '
-            if key == 'ISBN': #isbnを文字列型にしたとき''で囲むのに気を付けた方が良い?(現状、数字以外が来るとエラー).
-                sql = sql + key + ' = ' + value + ' '
+            if key == 'ISBN':
+                sql = sql + key + ' = \'' + value + '\' '
             else:
                 sql = sql + key + ' LIKE \'%%' + value + '%%\' '
             flag += 1
@@ -202,12 +195,12 @@ def create_sql_centence(attr: dict):
 @blueprint.route('/<int:isbn>/register_book')
 @login_required
 def register_book(isbn):
-    # 書籍の登録(ToDo:isbn情報登録の追加)
+    # 書籍の登録
     attr = search_book_from_API(isbn)
     db = get_db()
     same_book = db.execute(
-        'SELECT * FROM book WHERE isbn = ?', (isbn,)
-    ).fetchone() #get_book()で良さそう
+        'SELECT * FROM book WHERE isbn = \'?\'', (isbn,)
+    ).fetchone()
     if same_book is None:
         db.execute(
             'INSERT INTO book (title, author, publisher, ISBN)'

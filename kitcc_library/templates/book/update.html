@@ -18,8 +18,7 @@
     <input
       name="publisher" id="publisher"
       value="{{ request.form['publisher'] or book['publisher'] }}" required>
-    <label for="ISBN">ISBN</label>
-    <input
+    <input type="hidden"
       name="ISBN" id="ISBN"
       value="{{ request.form['ISBN'] or book['ISBN'] }}" required>
     <label for="stock">Stock</label>
