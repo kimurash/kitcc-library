@@ -6,7 +6,7 @@
 
 {% block content %}
   {% if g.user %}
-    <a class="action" href="{{ url_for('auth.register_user') }}">New</a>
+    <a class="action" href="{{ url_for('auth.register_user') }}">New User</a>
   {% endif %}
   {% if not users %}
     <p>No users registered</p>

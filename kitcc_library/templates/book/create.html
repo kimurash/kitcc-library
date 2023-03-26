@@ -21,15 +21,16 @@
     <input type="submit" value="Search">
   </form>
   {% if not books %}
-    <p>No books exist</p>
+    <p>No books found</p>
   {% else %}
+    {{ pagination.info }}
     <table class="book-list">
       <colgroup>
         <col width="25%">
-        <col width="25%">
-        <col width="25%">
-        <col width="25%">
-        <col width="10%">
+        <col width="20%">
+        <col width="20%">
+        <col width="20%">
+        <col width="15%">
       </colgroup>
       <thead>
         <tr>
@@ -37,7 +38,7 @@
           <th>Author</th>
           <th>Publisher</th>
           <th>ISBN</th>
-          <th>Resister</th>
+          <th>Register</th>
         </tr>
       </thead>
       <tbody>
@@ -57,12 +58,13 @@
             <td class="book-publisher">{{ book['publisher'] }}</td>
             <td class="book-isbn">{{ book['ISBN'] }}</td>
             <td class="book-register">
-              <input type="submit" value="Resister">
+              <input type="submit" value="Register">
             </td>
           </tr>
         </form>
         {% endfor %}
       </tbody>
     </table>
+    {{ pagination.links }}
   {% endif %}
 {% endblock %}

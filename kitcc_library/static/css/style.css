@@ -15,7 +15,13 @@ h1 {
 }
 
 a {
+  cursor: pointer;
   color: #377ba8;
+}
+
+a.action{
+  display: inline-block;
+  margin: 0.5em 0;
 }
 
 hr {
@@ -24,26 +30,26 @@ hr {
 }
 
 /* ナビゲーションバー */
-nav {
+.nav-top {
   background: lightgray;
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
 }
 
-nav h1 {
+.nav-top h1 {
   flex: auto;
   margin: 0;
 }
 
-nav ul {
+.nav-top ul {
   display: flex;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-nav ul li a, nav ul li span {
+.nav-top ul li a, .nav-top ul li span {
   display: block;
   padding: 0.5rem;
 }
@@ -133,7 +139,7 @@ td{
   background-color: whitesmoke;
 }
 
-.book-title, .book-author, .book-publisher{
+.book-title, .book-author, .book-publisher, .book-isbn{
   text-align: left;
   white-space: nowrap; /* 改行しない */
   overflow-x: auto; /* 収まらない場合はスクロール */
@@ -159,12 +165,6 @@ td{
   margin-bottom: 1em;
 }
 
-/* ユーザの一覧表の削除ボタン */
-.user-list input[type=submit]{
-  align-self: center;
-  margin: 0;
-}
-
 input.danger {
   color: #cc2f2e;
 }
@@ -175,20 +175,19 @@ input[type=submit] {
   max-width: 10em;
 }
 
-/* flask-paginate */
-.pagination-page-info {
-  padding: .6em;
-  padding-left: 0;
-  width: 40em;
-  margin: .5em;
-  margin-left: 0;
-  font-size: 12px;
-}
-
-.pagination-page-info b {
-  color: black;
-  background: #6aa6ed;
-  padding-left: 2px;
-  padding: .1em .25em;
-  font-size: 150%;
+/* 書籍の登録ボタン */
+/* ユーザの一覧表の削除ボタン */
+.book-register input[type=submit],
+.user-list input[type=submit]{
+  align-self: center;
+  cursor: pointer;
+  min-width: auto;
+  font-size: medium;
+  font-weight: 400;
+  color: #0d6efd;
+  background-color:transparent;
+  text-decoration:underline;
+  padding: 0;
+  border: none;
+  margin: 0;
 }

@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import flash
 from flask import g
+from flask import session
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -8,20 +9,23 @@ from flask import url_for
 
 from werkzeug.exceptions import abort
 
+from flask_paginate import Pagination
+from flask_paginate import get_page_parameter
+
 from kitcc_library.auth import login_required
 from kitcc_library.db import get_db
 
-import json
 import requests
+
+PER_PAGE = 20 # 1ページに表示する冊数
 
 blueprint = Blueprint('book', __name__)
 
 @blueprint.route('/', methods=('GET', 'POST'))
 def index():
-    """書籍の一覧を取得する"""
     """
     GET :登録済みの全書籍の取得
-    POST:条件に合った書籍を取得し、一覧ページに表示
+    POST:条件に合った書籍を取得して一覧ページに表示
     """
     db = get_db()
     if request.method == 'GET':
@@ -31,54 +35,60 @@ def index():
     elif request.method == 'POST':
         attr = get_data_from_form()
         books = db.execute(create_sql_centence(attr)).fetchall()
-    return render_template('book/index.html', books=books)
 
-def get_book(isbn):
-    book = get_db().execute(
-        'SELECT * FROM book WHERE isbn = ?', (isbn,)
-    ).fetchone()
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    pagination = Pagination(
+        page=page, per_page=PER_PAGE, total=len(books),
+        record_name='books', css_framework='bootstrap5'
+    )
 
-    if book is None:
-        abort(404, f"Book ISBN {isbn} doesn't exist.")
-
-    return book
+    return render_template(
+        'book/index.html',
+        books=books[(page - 1) * PER_PAGE:page * PER_PAGE],
+        pagination=pagination
+    )
 
 @blueprint.route('/create_book', methods=('GET', 'POST'))
 @login_required
 def create_book():
     """
-    GET :書籍の検索画面に遷移&検索結果表示
-    POST:書籍を登録し、一覧ページへリダイレクト
+    GET :書籍の検索結果の表示
+    POST:書籍を登録して一覧ページへリダイレクト
     """
     if request.method == 'POST':
         attr = get_data_from_form()
-        print(attr)
         db = get_db()
-        same_book = db.execute(
+        same_book = same_book = db.execute(
             'SELECT * FROM book WHERE isbn = ?', (attr['ISBN'],)
-        ).fetchone() #get_book()で良さそう
-        if same_book is None:
+        ).fetchone()
+
+        if same_book is None: # 新規登録
             db.execute(
                 'INSERT INTO book (title, author, publisher, ISBN)'
                 ' VALUES (?, ?, ?, ?)',
                 (attr['title'], attr['author'], attr['publisher'], attr['ISBN'])
             )
-        else:
+        else: # 登録済み
             db.execute(
-                'UPDATE book SET stock = ?'
-                ' WHERE isbn = ?',
+                'UPDATE book SET stock = ? WHERE isbn = ?',
                 (same_book['stock']+1, attr['ISBN'])
             )
         db.commit()
+
         flash('Registered', category='flash message')
         return redirect(url_for('book.index'))
 
-    # 書籍の検索・表示
+    # 書籍の検索
     attr = get_data_from_args()
-    print(attr)
-    books = search_books_from_API(attr)
-    return render_template('book/create.html', books=books)
+    page = request.args.get(get_page_parameter(), type=int, default=1)
+    (books, total_items) = search_books_from_API(attr, page)
 
+    pagination = Pagination(
+        page=page, per_page=PER_PAGE, total=total_items,
+        record_name='books', css_framework='bootstrap5'
+    )
+
+    return render_template('book/create.html', books=books, pagination=pagination)
 
 @blueprint.route('/<int:isbn>/update_book', methods=('GET', 'POST'))
 @login_required
@@ -123,22 +133,103 @@ def delete_book(isbn):
     flash('Deleted', category='flash message')
     return redirect(url_for('book.index'))
 
-def get_data_from_form():
-    """# リクエストから必要なデータを取得する"""
-    attr = dict()
-    attr['title'] = request.form.get('title')
-    attr['author'] = request.form.get('author')
-    attr['publisher'] = request.form.get('publisher')
-    attr['ISBN'] = request.form.get('ISBN')
-    return attr
 
+def get_book(isbn):
+    book = get_db().execute(
+        'SELECT * FROM book WHERE isbn = ?', (isbn,)
+    ).fetchone()
+
+    if book is None:
+        abort(404, f"Book ISBN {isbn} doesn't exist.")
+
+    return book
+
+def search_books_from_API(attr: dict, page):
+    """
+    Google Books APIsからisbnに合う本を検索してJSON形式で取得 -> 辞書型に整形
+    ISBN_13がないものは省く
+    """
+    # リクエストURLの生成
+    url = 'https://www.googleapis.com/books/v1/volumes?maxResults=' + str(PER_PAGE) + '&startIndex=' + str((page - 1) * PER_PAGE) + '&q='
+    for (key, value) in attr.items():
+        if value:
+            if key == 'ISBN':
+                url = url + '+' + key.lower() + ':' + value
+            else:
+                url = url + '+in' + key + ':' + value
+
+    # APIにリクエストを投げる
+    response = requests.get(url).json()
+    total_items = int(response.get('totalItems', '0'))
+    items_list = response.get('items')
+    books = []
+
+    # totalItems != 0でもitemsがない場合がある
+    # e.g.(https://www.googleapis.com/books/v1/volumes?maxResults=40&q=+intitle:%EF%BC%9A&startIndex=280)
+    if items_list is None:
+        return (books, total_items)
+
+    # レスポンスから書籍の情報を抽出
+    for item in items_list:
+        info = item.get('volumeInfo')
+        # ISBN_13をisbnに取得
+        isbn = None
+        for isbn_X in info.get('industryIdentifiers', []):
+            if isbn_X.get('type') == 'ISBN_13':
+                isbn = isbn_X.get('identifier')
+                break
+
+        if isbn is None:
+            continue
+
+        authors_list = info.get('authors')
+        books.append({
+            'title': info.get('title'),
+            'author': ','.join(authors_list) if authors_list is not None else None,
+            'publisher': info.get('publisher'),
+            'ISBN': isbn
+        })
+
+    return (books, total_items)
+
+def create_sql_centence(attr: dict):
+    """
+    入力条件に応じたSQL文を生成
+    入力条件がなければ登録済みの書籍を全て検索
+    """
+    sql = 'SELECT * FROM book WHERE '
+    cond_count = 0
+    for (key, value) in attr.items():
+        if value:
+            if cond_count != 0:
+                sql = sql + 'AND '
+            if key == 'ISBN':
+                sql = sql + key + ' = \'' + value + '\' '
+            else:
+                sql = sql + key + ' LIKE \'%%' + value + '%%\' '
+            cond_count += 1
+
+    if (cond_count == 0):
+        return f'SELECT * FROM book ORDER BY author DESC'
+
+    return sql
+
+# GETメソッドのとき
 def get_data_from_args():
-    """# リクエストから必要なデータを取得する"""
     attr = dict()
     attr['title'] = request.args.get('title')
     attr['author'] = request.args.get('author')
     attr['publisher'] = request.args.get('publisher')
     attr['ISBN'] = request.args.get('ISBN')
+    return attr
+
+# POSTメソッドのとき
+def get_data_from_form():
+    attr = dict()
+    attr['title'] = request.form.get('title')
+    attr['author'] = request.form.get('author')
+    attr['publisher'] = request.form.get('publisher')
+    attr['ISBN'] = request.form.get('ISBN')
     return attr
 
 def check_form_data(attr: dict):
@@ -148,61 +239,3 @@ def check_form_data(attr: dict):
             return f'{key.capitalize()} is required.'
 
     return ''
-
-def search_books_from_API(attr: dict):
-    """
-    Google Books APIsからisbnに合う本を1冊だけ検索し、JSON形式で取得。辞書型に整形
-    現状、ISBN_13がないものは省く
-    """
-    max_results = 40 #ページ分割するなら、引数に指定し、create_bookで制御が丸い?
-    url = 'https://www.googleapis.com/books/v1/volumes?maxResults=' + str(max_results) + '&q='
-    for (key, value) in attr.items():
-        if value:
-            if key == 'ISBN':
-                url = url + '+' + key.lower() + ':' + value
-            else:
-                url = url + '+in' + key + ':' + value
-    response = requests.get(url).json()
-    num_items = int(response.get('totalItems') if response.get('totalItems') is not None else '0')
-    books = []
-    for index in range((num_items // max_results) + int(bool(num_items % max_results))):
-        temp_url = url + '&startIndex=' + str(index * max_results)
-        print(temp_url)
-        temp_response = requests.get(temp_url).json()
-        items_list = temp_response.get('items')
-        if items_list is None:
-            break
-        for item in items_list: #totalItems != 0でも、itemsがない場合がある。e.g.(https://www.googleapis.com/books/v1/volumes?maxResults=40&q=+intitle:%EF%BC%9A&startIndex=280)
-            info = item.get('volumeInfo')
-            # ISBN_13をisbnに取得
-            isbn = None
-            for isbn_X in info.get('industryIdentifiers') if info.get('industryIdentifiers') is not None else []:
-                if isbn_X.get('type') == 'ISBN_13':
-                    isbn = isbn_X.get('identifier')
-                    break
-            if isbn is None:
-                continue
-            authors_list = info.get('authors')
-            books.append({
-                'title': info.get('title'),
-                'author': ','.join(authors_list) if authors_list is not None else None,
-                'publisher': info.get('publisher'),
-                'ISBN': isbn})
-    return books
-
-def create_sql_centence(attr: dict):
-    """入力条件に応じたSQL文を生成。入力条件がないなら、登録済みの書籍を全て検索"""
-    sql = 'SELECT * FROM book WHERE '
-    flag = 0
-    for (key, value) in attr.items():
-        if value:
-            if flag != 0:
-                sql = sql + 'AND '
-            if key == 'ISBN':
-                sql = sql + key + ' = \'' + value + '\' '
-            else:
-                sql = sql + key + ' LIKE \'%%' + value + '%%\' '
-            flag += 1
-    if (flag == 0):
-        return f'SELECT * FROM book ORDER BY author DESC'
-    return sql

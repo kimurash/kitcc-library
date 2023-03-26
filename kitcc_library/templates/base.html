@@ -1,7 +1,8 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - KITCC Library</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<nav>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pagination.css') }}">
+<nav class="nav-top">
   <h1>KITCC Library</h1>
   <ul>
     <li><a href="{{ url_for('book.index') }}">Book List</a>

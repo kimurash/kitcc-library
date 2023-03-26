@@ -2,13 +2,15 @@
 name = "kitcc-library"
 version = "0.1.0"
 description = ""
-authors = ["Shunsei"]
+authors = ["shunsei", "pentagon"]
 readme = "README.md"
 packages = [{include = "kitcc_library"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 flask = "^2.2.3"
+requests = "^2.28.2"
+flask-paginate = "^2022.1.8"
 
 
 [build-system]

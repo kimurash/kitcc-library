@@ -21,11 +21,12 @@
     <input type="submit" value="Search">
   </form>
   {% if g.user %}
-    <a class="action" href="{{ url_for('book.create_book') }}">New</a>
+    <a class="action" href="{{ url_for('book.create_book') }}">New Book</a>
   {% endif %}
   {% if not books %}
     <p>No books registered</p>
   {% else %}
+    {{ pagination.info }}
     <table class="book-list">
       <colgroup>
         <col width="25%">
@@ -51,11 +52,12 @@
             <td class="book-publisher">{{ book['publisher'] }}</td>
             <td class="book-stock">{{ book['stock'] }}</td>
             <td class="book-edit">
-              <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">編集</a>
+              <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">Edit</a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+    {{ pagination.links }}
   {% endif %}
 {% endblock %}
