@@ -48,9 +48,9 @@ def index():
         pagination=pagination
     )
 
-@blueprint.route('/create_book', methods=('GET', 'POST'))
+@blueprint.route('/register_book', methods=('GET', 'POST'))
 @login_required
-def create_book():
+def register_book():
     """
     GET :書籍の検索結果の表示
     POST:書籍を登録して一覧ページへリダイレクト
@@ -88,7 +88,7 @@ def create_book():
         record_name='books', css_framework='bootstrap5'
     )
 
-    return render_template('book/create.html', books=books, pagination=pagination)
+    return render_template('book/register.html', books=books, pagination=pagination)
 
 @blueprint.route('/<int:isbn>/update_book', methods=('GET', 'POST'))
 @login_required

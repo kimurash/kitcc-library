@@ -1,26 +1,32 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - KITCC Library</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/pagination.css') }}">
-<nav class="nav-top">
-  <h1>KITCC Library</h1>
-  <ul>
-    <li><a href="{{ url_for('book.index') }}">Book List</a>
-    {% if g.user %}
-      <!-- <li><span>{{ g.user['username'] }}</span> -->
-      <li><a href="{{ url_for('auth.index') }}">User List</a>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
-  </ul>
-</nav>
-<section class="content">
-  <header>
-    {% block header %}{% endblock %}
-  </header>
-  {% for (category, message) in get_flashed_messages(with_categories=true) %}
-    <div class="{{ category }}">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
-</section>
+<head>
+  <title>{% block title %}{% endblock %} - KITCC Library</title>
+  <meta name="viewport" content="width=device-width,initial-scale=0.8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/modal.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pagination.css') }}">
+</head>
+<body>
+  <nav class="nav-top">
+    <h1>KITCC Library</h1>
+    <ul>
+      <li><a href="{{ url_for('book.index') }}">Book List</a>
+      {% if g.user %}
+        <!-- <li><span>{{ g.user['username'] }}</span> -->
+        <li><a href="{{ url_for('auth.index') }}">User List</a>
+        <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+      {% else %}
+        <li><a href="{{ url_for('auth.login') }}">Log In</a>
+      {% endif %}
+    </ul>
+  </nav>
+  <section class="content">
+    <header>
+      {% block header %}{% endblock %}
+    </header>
+    {% for (category, message) in get_flashed_messages(with_categories=true) %}
+      <div class="{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </section>
+</body>

@@ -1,0 +1,79 @@
+.modal {
+  display: none;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-open-btn{
+  display: none;
+  align-self: start;
+  font-size: medium;
+  min-width: 10em;
+  max-width: 10em;
+  padding: 3px;
+  margin: 1em 0;
+}
+
+/* モバイルデバイスのときだけ表示する */
+@media screen and (max-width: 640px) and (hover: none) and (pointer: coarse) {
+  .modal-open-btn {
+    display: block;
+  }
+}
+
+.modal .modal-close{
+  display: block;
+  float: right;
+  padding:25px 0;
+}
+
+.modal .modal-close::before, .modal .modal-close::after {
+  display: block;
+  content: "";
+  width: 50px;
+  height: 1px;
+  background: #fff;
+}
+
+.modal .modal-close::before {
+  transform: rotate(-45deg);
+}
+
+.modal .modal-close::after {
+  transform: rotate(45deg);
+}
+
+.modal .viewport{
+  width: 100%;
+  height: 75%;
+  position: relative;
+  margin-top: 50px;
+}
+
+.viewport video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 5%;
+}
+
+.viewport canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 5%;
+}
+
+.modal .instruction {
+  width: 100%;
+  bottom: 1rem;
+  margin-top: 1rem;
+  color: #fff;
+  text-align: center;
+  font-size: x-large;
+}

@@ -21,6 +21,7 @@ a {
 
 a.action{
   display: inline-block;
+  font-size: large;
   margin: 0.5em 0;
 }
 
@@ -29,6 +30,7 @@ hr {
   border-top: 1px solid lightgray;
 }
 
+/* 表示順の記述を心がけている */
 /* ナビゲーションバー */
 .nav-top {
   background: lightgray;
@@ -69,6 +71,10 @@ hr {
   margin: 1rem 0 0.25rem 0;
 }
 
+.content:last-child {
+  margin-bottom: 0;
+}
+
 .flash{
   font-weight: bold;
   margin: 1em 0;
@@ -98,16 +104,50 @@ hr {
   background-color: #f8d7da;
 }
 
-/* 書籍一覧表 */
+.content form {
+  margin: 0.5em 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.content label {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.content input {
+  font-size: medium;
+  padding: 3px;
+  margin-bottom: 1em;
+}
+
+input.danger {
+  color: #cc2f2e;
+}
+
+input[type=submit] {
+  align-self: start;
+  min-width: 10em;
+  max-width: 10em;
+}
+
+/* 一覧表 */
 table{
+  display: block;
+  overflow-x: auto; /* 収まらない場合はスクロール */
   table-layout: fixed;
-  /* max-width: ; */
   padding: 0;
   border-width: 2px 0;
   border-style: solid;
   border-color: dimgray;
   border-spacing: 0;
   margin: 10px auto;
+}
+
+/* スクロールが必要ない場合に表の右側に発生する余計な余白を無くす */
+table tbody{
+  display: table;
+  width: 100%;
 }
 
 .book-list{
@@ -129,7 +169,6 @@ th, td{
 }
 
 th{
-  /* text-align: center; */
   font-weight: bold;
   background-color: #a0b8c8;
   margin: 0;
@@ -141,43 +180,14 @@ td{
 
 .book-title, .book-author, .book-publisher, .book-isbn{
   text-align: left;
-  white-space: nowrap; /* 改行しない */
-  overflow-x: auto; /* 収まらない場合はスクロール */
-}
-
-.content:last-child {
-  margin-bottom: 0;
-}
-
-.content form {
-  margin: 0.5em 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.content label {
-  font-weight: bold;
-  margin-bottom: 0.5em;
-}
-
-.content input {
-  padding: 3px;
-  margin-bottom: 1em;
-}
-
-input.danger {
-  color: #cc2f2e;
-}
-
-input[type=submit] {
-  align-self: start;
-  min-width: 10em;
-  max-width: 10em;
+  max-width: 200px;
+  white-space: nowrap; /* 折り返さない */
+  overflow-x: auto;
 }
 
 /* 書籍の登録ボタン */
-/* ユーザの一覧表の削除ボタン */
 .book-register input[type=submit],
+/* ユーザ一覧の削除ボタン */
 .user-list input[type=submit]{
   align-self: center;
   cursor: pointer;
