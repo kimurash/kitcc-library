@@ -5,14 +5,43 @@
 {% endblock %}
 
 {% block content %}
+  <button id="modal-open" class="modal-open-btn">scan with camera</button>
+  <div id="modal" class="modal">
+    <div id="modal-close" class="modal-close"></div>
+    <div id="interactive" class="viewport"></div>
+    <p class="instruction">Plaese capture the JAN code.</p>
+  </div>
+  <form method="post">
+    <label for="title">Title</label>
+    <input
+      name="title" id="title" value="{{ request.form['title'] }}">
+    <label for="author">Author</label>
+    <input
+      name="author" id="author" value="{{ request.form['author'] }}">
+    <label for="publisher">Publisher</label>
+    <input
+      name="publisher" id="publisher" value="{{ request.form['publisher'] }}">
+    <label for="ISBN">ISBN</label>
+    <input
+      name="ISBN" id="ISBN" value="{{ request.form['ISBN'] }}">
+    <input type="submit" value="Search">
+  </form>
   {% if g.user %}
-    <a class="action" href="{{ url_for('book.create_book') }}">New</a>
+    <a class="action" href="{{ url_for('book.register_book') }}">New Book</a>
   {% endif %}
   {% if not books %}
     <p>No books registered</p>
   {% else %}
-    <table>
-      <thead>
+    {{ pagination.info }}
+    <table class="book-list">
+      <colgroup>
+        <col width="25%">
+        <col width="25%">
+        <col width="25%">
+        <col width="12.5%">
+        <col width="12.5%">
+      </colgroup>
+      <tbody>
         <tr>
           <th>Title</th>
           <th>Author</th>
@@ -20,20 +49,21 @@
           <th>Stock</th>
           <th>Edit</th>
         </tr>
-      </thead>
-      <tbody>
         {% for book in books %}
-        <tr>
-            <td>{{ book['title'] }}</td>
-            <td>{{ book['author'] }}</td>
-            <td>{{ book['publisher'] }}</td>
-            <td>{{ book['stock'] }}</td>
-            <td>
-              <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">編集</a>
+          <tr>
+            <td class="book-title">{{ book['title'] }}</td>
+            <td class="book-author">{{ book['author'] }}</td>
+            <td class="book-publisher">{{ book['publisher'] }}</td>
+            <td class="book-stock">{{ book['stock'] }}</td>
+            <td class="book-edit">
+              <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">Edit</a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+    {{ pagination.links }}
   {% endif %}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/quagga.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/modal.js') }}"></script>
 {% endblock %}

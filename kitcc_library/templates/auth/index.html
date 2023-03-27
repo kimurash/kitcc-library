@@ -6,21 +6,19 @@
 
 {% block content %}
   {% if g.user %}
-    <a class="action" href="{{ url_for('auth.register_user') }}">New</a>
+    <a class="action" href="{{ url_for('auth.register_user') }}">New User</a>
   {% endif %}
   {% if not users %}
     <p>No users registered</p>
   {% else %}
-    <table>
-      <thead>
+    <table class="user-list">
+      <tbody>
         <tr>
           <th>Username</th>
-          <th>Edit</th>
+          <th>Delete</th>
         </tr>
-      </thead>
-      <tbody>
         {% for user in users %}
-        <tr>
+          <tr>
             <td>{{ user['username'] }}</td>
             <td>
               <form action="{{ url_for('auth.delete_user', id=user['id']) }}" method="post">

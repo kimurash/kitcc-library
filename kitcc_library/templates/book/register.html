@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}New Book{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <button id="modal-open" class="modal-open-btn">scan with camera</button>
+  <div id="modal" class="modal">
+    <div id="modal-close" class="modal-close"></div>
+    <div id="interactive" class="viewport"></div>
+    <p class="instruction">Plaese capture the JAN code.</p>
+  </div>
+  <form method="get">
+    <label for="title">Title</label>
+    <input
+      name="title" id="title" value="{{ request.args.get('title', '') }}">
+    <label for="author">Author</label>
+    <input
+      name="author" id="author" value="{{ request.args.get('author', '') }}">
+    <label for="publisher">Publisher</label>
+    <input
+      name="publisher" id="publisher" value="{{ request.args.get('publisher', '') }}">
+    <label for="ISBN">ISBN</label>
+    <input
+      name="ISBN" id="ISBN" value="{{ request.args.get('ISBN', '') }}">
+    <input type="submit" value="Search">
+  </form>
+  {% if not books %}
+    <p>No books found</p>
+  {% else %}
+    {{ pagination.info }}
+    <table class="book-list">
+      <colgroup>
+        <col width="25%">
+        <col width="20%">
+        <col width="20%">
+        <col width="17.5%">
+        <col width="17.5%">
+      </colgroup>
+      <tbody>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Publisher</th>
+          <th>ISBN</th>
+          <th>Register</th>
+        </tr>
+        {% for book in books %}
+          <form method="post">
+            <input type="hidden"
+              name="title" value="{{ book['title'] }}">
+            <input type="hidden"
+              name="author" value="{{ book['author'] }}">
+            <input type="hidden"
+              name="publisher" value="{{ book['publisher'] }}">
+            <input type="hidden"
+              name="ISBN" value="{{ book['ISBN'] }}">
+            <tr>
+              <td class="book-title">{{ book['title'] }}</td>
+              <td class="book-author">{{ book['author'] }}</td>
+              <td class="book-publisher">{{ book['publisher'] }}</td>
+              <td class="book-isbn">{{ book['ISBN'] }}</td>
+              <td class="book-register">
+                <input type="submit" value="Register">
+              </td>
+            </tr>
+          </form>
+        {% endfor %}
+      </tbody>
+    </table>
+    {{ pagination.links }}
+  {% endif %}
+  <script type="text/javascript" src="{{ url_for('static', filename='js/quagga.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/modal.js') }}"></script>
+{% endblock %}

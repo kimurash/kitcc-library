@@ -8,9 +8,9 @@ CREATE TABLE user (
 );
 
 CREATE TABLE book (
-    ISBN INTEGER PRIMARY KEY AUTOINCREMENT,
+    ISBN CHAR(13) PRIMARY KEY,
     title TEXT NOT NULL,
-    author TEXT NOT NULL,
-    publisher TEXT NOT NULL,
+    author TEXT,
+    publisher TEXT,
     stock INTEGER DEFAULT 1
 );
