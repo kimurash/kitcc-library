@@ -41,5 +41,9 @@ def create_app(test_config=None):
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
+    
+    @app.route('/favicon.ico')
+    def favicon():
+        return app.send_static_file('img/favicon.ico')
 
     return app
