@@ -1,7 +1,6 @@
 from flask import Blueprint
 from flask import flash
 from flask import g
-from flask import session
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -34,7 +33,8 @@ def index():
         ).fetchall()
     elif request.method == 'POST':
         attr = get_data_from_form()
-        books = db.execute(create_sql_centence(attr)).fetchall()
+        query, args = create_sql_sentence(attr)
+        books = db.execute(query, args).fetchall()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
     pagination = Pagination(
@@ -192,27 +192,28 @@ def search_books_from_API(attr: dict, page):
 
     return (books, total_items)
 
-def create_sql_centence(attr: dict):
+def create_sql_sentence(attr: dict):
     """
     入力条件に応じたSQL文を生成
     入力条件がなければ登録済みの書籍を全て検索
     """
-    sql = 'SELECT * FROM book WHERE '
-    cond_count = 0
+    query = 'SELECT * FROM book WHERE '
+    args = []
     for (key, value) in attr.items():
         if value:
-            if cond_count != 0:
-                sql = sql + 'AND '
+            if len(args) != 0:
+                query = query + 'AND '
             if key == 'ISBN':
-                sql = sql + key + ' = \'' + value + '\' '
+                query = query + key + ' = ? '
+                args.append(str(value))
             else:
-                sql = sql + key + ' LIKE \'%%' + value + '%%\' '
-            cond_count += 1
+                query = query + key + ' LIKE ? '
+                args.append('%' + str(value) + '%')
 
-    if (cond_count == 0):
-        return f'SELECT * FROM book ORDER BY author DESC'
+    if (len(args) == 0):
+        return ('SELECT * FROM book ORDER BY author DESC', args)
 
-    return sql
+    return (query, args)
 
 # GETメソッドのとき
 def get_data_from_args():
