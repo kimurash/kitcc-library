@@ -34,7 +34,7 @@ def index():
     elif request.method == 'POST':
         attr = get_data_from_form()
         query, args = create_sql_sentence(attr)
-        books = db.execute(query, args).fetchall()
+        books = db.execute(query, tuple(args)).fetchall()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
     pagination = Pagination(
@@ -58,7 +58,7 @@ def register_book():
     if request.method == 'POST':
         attr = get_data_from_form()
         db = get_db()
-        same_book = same_book = db.execute(
+        same_book = db.execute(
             'SELECT * FROM book WHERE isbn = ?', (attr['ISBN'],)
         ).fetchone()
 
