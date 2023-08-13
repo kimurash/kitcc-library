@@ -6,6 +6,7 @@ from kitcc_library import create_app
 from kitcc_library.db import get_db, init_db
 
 with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
+    # バイナリファイルとして読み出す理由
     _data_sql = f.read().decode('utf8')
 
 @pytest.fixture
