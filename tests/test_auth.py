@@ -35,6 +35,7 @@ def test_register_delate(client, app, auth):
             "SELECT * FROM user WHERE username = 'bob'",
         ).fetchone() is None
 
+
 @pytest.mark.parametrize(('username', 'password', 'message'), (
     ('', '', b'Username is required.'),
     ('bob', '', b'Password is required.'),
@@ -59,6 +60,7 @@ def test_login(client, auth):
         assert session['user_id'] == 2
         assert g.user['username'] == 'alice'
 
+
 @pytest.mark.parametrize(('username', 'password', 'message'), (
     ('a', 'alice', b'Incorrect username.'),
     ('alice', 'a', b'Incorrect password.'),
@@ -66,6 +68,7 @@ def test_login(client, auth):
 def test_login_validate_input(auth, username, password, message):
     response = auth.login(username, password)
     assert message in response.data
+
 
 def test_logout(client, auth):
     auth.login()
