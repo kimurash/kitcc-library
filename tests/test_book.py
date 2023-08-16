@@ -56,7 +56,7 @@ def test_register(client, auth, app):
     with app.app_context():
         db = get_db()
 
-        stock = db.execute(f"SELECT stock FROM book WHERE ISBN = '{SAMPLE_ISBN}'").fetchone()[0]
+        stock = db.execute(f"SELECT stock FROM book WHERE isbn = '{SAMPLE_ISBN}'").fetchone()[0]
         assert stock == 2
 
         count = db.execute('SELECT COUNT(ISBN) FROM book').fetchone()[0]
@@ -77,7 +77,7 @@ def test_update(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        book = db.execute(f"SELECT * FROM book WHERE ISBN = '{SAMPLE_ISBN}'").fetchone()
+        book = db.execute(f"SELECT * FROM book WHERE isbn = '{SAMPLE_ISBN}'").fetchone()
         assert book['author'] == 'Trevor Foucher'
 
 
@@ -96,3 +96,14 @@ def test_update_validate(client, auth, path):
                                 'stock': 1
                             })
     assert b'Title is required.' in response.data
+
+
+def test_delete(client, auth, app):
+    auth.login()
+    response = client.post(f'/{SAMPLE_ISBN}/delete_book')
+    assert response.headers["Location"] == "/"
+
+    with app.app_context():
+        db = get_db()
+        book = db.execute(f"SELECT * FROM book WHERE isbn = '{SAMPLE_ISBN}'").fetchone()
+        assert book is None
