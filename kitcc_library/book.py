@@ -61,7 +61,7 @@ def register_book():
         # リクエストの内容は確認していない
 
         db = get_db()
-        same_book = same_book = db.execute(
+        same_book = db.execute(
             'SELECT * FROM book WHERE isbn = ?', (attr['ISBN'],)
         ).fetchone()
 
