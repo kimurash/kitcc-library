@@ -1,0 +1,37 @@
+name: pytest # workflowの名前
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # GitHubで手動で実行できるようになる
+
+jobs:
+  pytest: # jobの名前
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # あるジョブで失敗しても他のジョブを続行する
+      matrix:
+        python-version: ['3.9', '3.10', '3.11'] # 複数のバージョンでテストを実行する
+
+    steps:
+    - uses: actions/checkout@v3 #　リポジトリを実行環境に複製する
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    - name: Poetry version
+      run: poetry --version
+    - name: Poetry install dependencies
+      run: poetry install --no-interaction --no-ansi
+    - name: Test with pytest
+      run: |
+        poetry run pytest

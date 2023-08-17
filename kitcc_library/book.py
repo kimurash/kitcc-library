@@ -57,15 +57,18 @@ def register_book():
     """
     if request.method == 'POST':
         attr = get_data_from_form()
+        # 全てのデータが揃っていない書籍もあるので
+        # リクエストの内容は確認していない
+
         db = get_db()
-        same_book = same_book = db.execute(
+        same_book = db.execute(
             'SELECT * FROM book WHERE isbn = ?', (attr['ISBN'],)
         ).fetchone()
 
         if same_book is None: # 新規登録
             db.execute(
-                'INSERT INTO book (title, author, publisher, ISBN)'
-                ' VALUES (?, ?, ?, ?)',
+                'INSERT INTO book (title, author, publisher, ISBN) '
+                'VALUES (?, ?, ?, ?)',
                 (attr['title'], attr['author'], attr['publisher'], attr['ISBN'])
             )
         else: # 登録済み
@@ -111,7 +114,7 @@ def update_book(isbn):
             db = get_db()
             db.execute(
                 'UPDATE book SET title = ?, author = ?, publisher = ?, stock = ? '
-                ' WHERE isbn = ?',
+                'WHERE isbn = ?',
                 (attr['title'], attr['author'], attr['publisher'], attr['stock'], isbn)
             )
             db.commit()
