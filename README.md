@@ -15,6 +15,17 @@ Poetryがインストールされた環境で`install`コマンドを実行す�
 poetry install
 ```
 
+## 動作確認の方法
+- データベースの初期化
+```
+flask --app kitcc_library init-db
+```
+
+- アプリの起動
+```
+flask --app kitcc_library run [--debug]
+```
+
 ## ディレクトリ構成
 ```
 ├─kitcc_library
@@ -34,15 +45,4 @@ poetry install
 │     └─book
 │
 └─tests
-```
-
-## 動作確認の方法
-- データベースの初期化
-```
-flask --app kitcc_library init-db
-```
-
-- アプリの起動
-```
-flask --app kitcc_library run [--debug]
 ```
