@@ -58,6 +58,9 @@
             <td class="book-edit">
               <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">Edit</a>
             </td>
+            <td class="book-lend">
+              <a href="{{ url_for('lend_and_return.lend_book', isbn=book['isbn']) }}">Lend</a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>
