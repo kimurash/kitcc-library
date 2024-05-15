@@ -24,7 +24,7 @@ def init_db():
     # テストユーザを登録
     db.execute(
         "INSERT INTO user (username, password)"
-        "VALUES ('shunsei', 'pbkdf2:sha256:260000$P9wjL1bRDRjVBJjo$048651989cff8c8317e7bd3720f58c9c24dbbb914bce905448e33bc2e8504698')"
+        "VALUES ('kitcclib', 'pbkdf2:sha256:260000$kgsmyeEGxaMgKngE$3e4895e216fa33a638a66299e1d499c9ec47c855d67a4e673240bf111364456c')"
     )
     db.commit()
 
