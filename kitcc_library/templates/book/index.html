@@ -60,7 +60,7 @@
               <a href="{{ url_for('book.update_book', isbn=book['isbn']) }}">Edit</a>
             </td>
             <td class="book-lend">
-              <a href="{{ url_for('lend_and_return.lend_book', isbn=book['isbn']) }}" onclick="return confirm('本を借りますか？\n\nタイトル: 「{{ book['title'] }}」')">Lend</a>
+              <a href="{{ url_for('lend_and_return.lend_book', isbn=book['isbn']) }}" onclick="return confirm('本を借りますか？\n\nタイトル: 「{{ book['title'] }}」');">Lend</a>
             </td>
           </tr>
         {% endfor %}
