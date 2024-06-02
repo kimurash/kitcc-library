@@ -33,6 +33,10 @@ def create_app(test_config=None):
     from . import book
     app.register_blueprint(book.blueprint)
 
+    # 貸し借り機能の追加
+    from . import lend_and_return
+    app.register_blueprint(lend_and_return.blueprint)
+
     # エンドポイント'index'とURL'/'を紐づける
     # url_for('index')で'/'が生成される
     app.add_url_rule('/', endpoint='index')
