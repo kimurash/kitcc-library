@@ -3,7 +3,7 @@ from flask import g, session
 from kitcc_library.db import get_db
 
 
-def test_register_delate(client, app, auth):
+def test_register_delete(client, app, auth):
     # ユーザ登録画面に遷移
     assert client.get('/auth/register_user').status_code == 200
 

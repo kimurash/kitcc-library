@@ -4,9 +4,9 @@
 ## 使用している技術
 - [Poetry](https://python-poetry.org/)
 - [Flask](https://flask.palletsprojects.com/en/2.2.x/)
-- [Requests](https://requests.readthedocs.io/en/latest/)
-- [flask-paginate](https://pythonhosted.org/Flask-paginate/)
+- [SQLite](https://sqlite.org/)
 - [QuaggaJS](https://serratus.github.io/quaggaJS/)
+- [Gunicorn](https://gunicorn.org/)
 
 Poetryを使用してパッケージを管理しています．
 Poetryがインストールされた環境で`install`コマンドを実行すると

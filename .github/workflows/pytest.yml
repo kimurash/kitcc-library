@@ -35,3 +35,6 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest
+      env:
+        TEST_USER_NAME: username
+        TEST_USER_PASSWORD: password
