@@ -1,9 +1,12 @@
+import os
 import sqlite3
 
 import click
 from flask import Flask
 from flask import current_app
 from flask import g
+from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash
 
 def init_app(app: Flask):
     # レスポンスを返した後に呼び出す関数を登録
@@ -21,10 +24,16 @@ def init_db():
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+    # テストユーザの情報を取得
+    load_dotenv()
+    test_user_name = os.getenv('TEST_USER_NAME')
+    test_user_password = os.getenv('TEST_USER_PASSWORD')
+    password_hash = generate_password_hash(test_user_password)
+
     # テストユーザを登録
     db.execute(
         "INSERT INTO user (username, password)"
-        "VALUES ('kitcclib', 'pbkdf2:sha256:260000$kgsmyeEGxaMgKngE$3e4895e216fa33a638a66299e1d499c9ec47c855d67a4e673240bf111364456c')"
+        f"VALUES ('{test_user_name}', '{password_hash}')"
     )
     db.commit()
 

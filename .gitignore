@@ -16,4 +16,4 @@ build/
 gunicorn_config.py
 
 .python-version
-run.py
+.env
